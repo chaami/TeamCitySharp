@@ -1,5 +1,4 @@
-version:
-  - 1.0.63-{branch}-{build}
+version: 1.0.63-{branch}-{build}
 
 image:
   - Visual Studio 2017
