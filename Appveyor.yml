@@ -1,0 +1,18 @@
+version:
+  - 1.0.63-{branch}-{build}
+
+image:
+  - Visual Studio 2017
+
+cache:
+  - packages -> **\packages.config
+  - '%LocalAppData%\NuGet\v3-cache'
+
+build:
+  project: TeamCitySharp.sln
+
+before_build: 
+  - ps: nuget restore
+
+configuration:
+  - Release

@@ -1,4 +1,4 @@
-[![NuGet version (TeamCitySharp-forked-mavezeau)](https://img.shields.io/nuget/v/TeamCitySharp-forked-mavezeau.svg?style=flat-square)](https://www.nuget.org/packages/TeamCitySharp-forked-mavezeau/)
+[![NuGet version (TeamCitySharp-forked-mavezeau)](https://img.shields.io/nuget/v/TeamCitySharp-forked-mavezeau.svg?style=flat-square)](https://www.nuget.org/packages/TeamCitySharp-forked-mavezeau/) [![Build status](https://ci.appveyor.com/api/projects/status/ut8aq4lwfek1tq2g/branch/master?svg=true)](https://ci.appveyor.com/project/chaami/teamcitysharp/branch/master)
 
 # TeamCitySharp
 
@@ -17,10 +17,10 @@ http://stack72.mit-license.org/
 There are 2 ways to use TeamCitySharp:
 
 * install-package TeamCitySharp-forked-mavezeau (via Nuget)
-* Download source and compile
+* Download / clone source and compile
 
 ## Build Monitor
-* There is a sample build monitor built with TeamCitySharp. It can be found at [TeamCityMonitor](https://github.com/stack72/TeamCityMonitor)
+* [TeamCityMonitor](https://github.com/stack72/TeamCityMonitor) is a sample build monitor built with TeamCitySharp.
 
 ## Sample Usage
 To get a list of projects
@@ -36,12 +36,17 @@ To get a list of running builds
     client.Connect("admin", "qwerty");
     var builds = client.Builds.ByBuildLocator(BuildLocator.RunningBuilds());
 
-## Connecting to a server
+## Configuring the connection to a server
 
 To connect as an authenticated user:
 
     var client = new TeamCityClient("localhost:81");
     client.Connect("username", "password");
+
+To connect using ssl:
+```cs
+    var client = new TeamCityClient("localhost", true);
+```
 
 To connect as a Guest:
 
@@ -257,5 +262,4 @@ Thanks to the following contributors:
 * Philipp Dolder
 * Mark deVilliers
 * Marc-Andre Vezeau (@exfo)
-* Bassem Mawassi (@exfo) 
-* 
+* Bassem Mawassi (@exfo)
