@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
 using PowerArgs;
+using TeamCitySharp.Locators;
 
 namespace TeamCitySharp.Cli
 {
+
     public struct TeamCityConnectionSettings
     {
 
@@ -11,10 +15,10 @@ namespace TeamCitySharp.Cli
 
         [ArgRequired(PromptIfMissing = true), ArgDescription("Hostname of the team city build server."), ArgPosition(1)]
         public string BuildServer {
-            get { return _buildServer; }
+            get => _buildServer;
             set
             {
-                int position = value.IndexOf(":");
+                int position = value.IndexOf(":", StringComparison.Ordinal);
                 if ( position != -1)
                 {
                     _buildServer = value.Substring(0, position);
@@ -24,7 +28,6 @@ namespace TeamCitySharp.Cli
                 {
                     _buildServer = value;
                 }
-
             }
         }
 
@@ -52,7 +55,8 @@ namespace TeamCitySharp.Cli
         {
             _client = new TeamCityClient($"{connectionSettings.BuildServer}:{connectionSettings.Port}", connectionSettings.UseSsl);
             _client.Connect(connectionSettings.Username, connectionSettings.Password.ConvertToNonsecureString());
-            StringBuilder connected = new StringBuilder(System.Environment.NewLine).Append("Connected!");
+            _client.Authenticate();
+            StringBuilder connected = new StringBuilder(Environment.NewLine).Append("Connected!");
             Console.WriteLine(connected);
         }
 
@@ -86,6 +90,33 @@ namespace TeamCitySharp.Cli
             }
         }
 
+        [ArgActionMethod, ArgDescription("Access the build queue information.")]
+        public void BuildQueue(string locator)
+        {
+            if (_client == null)
+            {
+                throw new ArgException("Connect to a team city server first.");
+            }
+
+            int parameterIndex = locator.IndexOf(":", StringComparison.Ordinal);
+            var builds = _client.BuildQueue.ByProjectLocater(ProjectLocator.WithName(locator.Substring(parameterIndex + 1)));
+            foreach (var build in builds)
+            {
+                Console.WriteLine(build);
+            }
+
+            var expandoLocator = new ExpandoObject() as IDictionary<string, object>;
+            // TODO Validate the locator format.
+            int typeIndex = locator.IndexOf("/", StringComparison.Ordinal);
+            expandoLocator.Add("type", locator.Substring(0, typeIndex));
+            expandoLocator.Add(locator.Substring(typeIndex + 1, parameterIndex - typeIndex - 1),
+                locator.Substring(parameterIndex + 1));
+            builds = _client.BuildQueue.WithExpandoLocator(expandoLocator);
+            foreach (var build in builds)
+            {
+                Console.WriteLine(build);
+            }
+        }
     }
 
     class Program
